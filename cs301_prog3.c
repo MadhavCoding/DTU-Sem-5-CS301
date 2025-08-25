@@ -8,9 +8,9 @@ char code[1000]; // Input Code
 int pos = 0;
 char token[100]; // Token generated
 
-void inputCode() 
+void input_code() 
 {
-    printf("Enter program code (end with $):\n");
+    printf("Enter program code (end with $):\n\n");
     char ch;
     int i = 0;
     while ((ch = getchar()) != '$' && i < MAX - 1) 
@@ -20,7 +20,7 @@ void inputCode()
     code[i] = '\0';
 }
 
-int getNextToken() 
+int get_next_token() 
 {
     int i = 0;
 
@@ -78,10 +78,32 @@ int getNextToken()
     }
 
     // Operator (single char for now)
-    if (strchr("+-*/=<>!&|;", code[pos])) 
+    if (strchr("+-*/%=<>!&|;", code[pos])) 
     {
-        token[i++] = code[pos++];
+        token[i++] = code[pos];
+
+        if (code[pos + 1] != '\0') 
+        {
+            if ((code[pos] == '+' && code[pos + 1] == '+') ||
+                (code[pos] == '-' && code[pos + 1] == '-') ||
+                (code[pos] == '+' && code[pos + 1] == '=') ||
+                (code[pos] == '-' && code[pos + 1] == '=') ||
+                (code[pos] == '*' && code[pos + 1] == '=') ||
+                (code[pos] == '/' && code[pos + 1] == '=') ||
+                (code[pos] == '%' && code[pos + 1] == '=') ||
+                (code[pos] == '=' && code[pos + 1] == '=') ||
+                (code[pos] == '!' && code[pos + 1] == '=') ||
+                (code[pos] == '<' && code[pos + 1] == '=') ||
+                (code[pos] == '>' && code[pos + 1] == '=') ||
+                (code[pos] == '&' && code[pos + 1] == '&') ||
+                (code[pos] == '|' && code[pos + 1] == '|'))
+            {
+                token[i++] = code[++pos];
+            }
+        }
+
         token[i] = '\0';
+        pos++; 
         return 1;
     }
 
@@ -92,7 +114,7 @@ int getNextToken()
     return 1;
 }
 
-void classifyToken(char *token) 
+void classify_token(char *token) 
 {
     // Keywords list 
     char *keywords[] = {"int", "float", "char", "if", "else", "while", "for", "return", "main", "const", "argc", "argv", "printf", "scanf"};
@@ -137,7 +159,7 @@ void classifyToken(char *token)
     }
 
     // Check operator
-    if (strchr("+-*/=<>!&|", token[0])) 
+    if (strchr("+-*/%=<>!&|;", token[0])) 
     {
         printf("%-40s : Operator\n", token);
         return;
@@ -147,13 +169,14 @@ void classifyToken(char *token)
     printf("%-40s : Symbol\n", token);
 }
 
-int main() {
-    inputCode();
+int main() 
+{
+    input_code();
 
     printf("\nTokens:\n");
-    while (getNextToken()) 
+    while (get_next_token()) 
     {
-        classifyToken(token);
+        classify_token(token);
     }
 
     return 0;
